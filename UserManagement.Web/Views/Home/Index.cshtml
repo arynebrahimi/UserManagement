@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<div class="welcome-panel">
+    <div class="welcome-copy">
+        <div class="page-eyebrow">OVERVIEW</div>
+        <h2>Welcome to your workspace</h2>
+        <p>Manage your account and keep your user workspace organized.</p>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="Users" asp-action="Index" class="btn-primary-soft">Manage users <i class="bi bi-arrow-right"></i></a>
+        }
+        else
+        {
+            <span class="welcome-user-note"><i class="bi bi-shield-check"></i> You are signed in securely.</span>
+        }
+    </div>
+    <div class="welcome-illustration"><div class="illustration-circle"><i class="bi bi-people-fill"></i></div><span class="illustration-dot dot-one"></span><span class="illustration-dot dot-two"></span></div>
+</div>
+
+<div class="section-heading">
+    <div><h3>Quick access</h3><p>Shortcuts to the areas you use most.</p></div>
+</div>
+<div class="quick-grid">
+    <a class="quick-card" asp-controller="Account" asp-action="Login">
+        <span class="quick-icon quick-icon-blue"><i class="bi bi-person-circle"></i></span>
+        <span><b>Account</b><small>Account access and sign-in</small></span>
+        <i class="bi bi-arrow-up-right quick-arrow"></i>
+    </a>
+    @if (User.IsInRole("Admin"))
+    {
+        <a class="quick-card" asp-controller="Users" asp-action="Index">
+            <span class="quick-icon quick-icon-purple"><i class="bi bi-people"></i></span>
+            <span><b>User management</b><small>View and manage registered users</small></span>
+            <i class="bi bi-arrow-up-right quick-arrow"></i>
+        </a>
+        <a class="quick-card" asp-controller="Users" asp-action="Create">
+            <span class="quick-icon quick-icon-green"><i class="bi bi-person-plus"></i></span>
+            <span><b>Add a user</b><small>Create a new user account</small></span>
+            <i class="bi bi-arrow-up-right quick-arrow"></i>
+        </a>
+    }
+</div>

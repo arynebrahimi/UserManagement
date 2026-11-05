@@ -1,0 +1,44 @@
+@model IEnumerable<UserManagement.Domain.Entities.User>
+@{
+    ViewData["Title"] = "User management";
+    var users = Model.ToList();
+    var adminCount = users.Count(u => u.Role == "Admin");
+}
+@if (TempData["SuccessMessage"] != null) { <div class="alert alert-success app-alert"><i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]</div> }
+@if (TempData["ErrorMessage"] != null) { <div class="alert alert-danger app-alert"><i class="bi bi-exclamation-circle"></i> @TempData["ErrorMessage"]</div> }
+
+<div class="page-heading">
+    <div><div class="page-eyebrow">DIRECTORY</div><h2>Users</h2><p class="page-subtitle">View, create and manage user accounts.</p></div>
+    <a asp-controller="Users" asp-action="Create" class="btn-primary-soft"><i class="bi bi-plus-lg"></i> Add new user</a>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card"><span class="stat-icon stat-icon-blue"><i class="bi bi-people"></i></span><div><small>Total users</small><strong>@users.Count</strong></div></div>
+    <div class="stat-card"><span class="stat-icon stat-icon-purple"><i class="bi bi-shield-check"></i></span><div><small>Administrators</small><strong>@adminCount</strong></div></div>
+    <div class="stat-card"><span class="stat-icon stat-icon-green"><i class="bi bi-person-check"></i></span><div><small>Regular users</small><strong>@(users.Count - adminCount)</strong></div></div>
+</div>
+
+<div class="content-card users-table-card">
+    <div class="table-card-heading"><div><h3>User directory</h3><p>All registered accounts</p></div><span class="count-chip">@users.Count accounts</span></div>
+    <div class="table-responsive">
+        <table class="table users-table">
+            <thead><tr><th>User</th><th>Email</th><th>Role</th><th>Registered</th><th class="text-end">Actions</th></tr></thead>
+            <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td><div class="table-user"><span class="table-avatar">@(!string.IsNullOrEmpty(user.FullName) ? user.FullName[0].ToString().ToUpperInvariant() : "U")</span><span><b>@user.FullName</b><small>@@@user.UserName</small></span></div></td>
+                    <td class="email-cell">@user.Email</td>
+                    <td>@if (user.Role == "Admin") { <span class="role-pill role-admin">Administrator</span> } else { <span class="role-pill role-user">User</span> }</td>
+                    <td class="date-cell">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                    <td><div class="table-actions">
+                        <a asp-controller="Users" asp-action="Edit" asp-route-id="@user.ID" class="icon-action edit-action" title="Edit user"><i class="bi bi-pencil"></i></a>
+                        <a asp-controller="Users" asp-action="Delete" asp-route-id="@user.ID" class="icon-action delete-action" title="Delete user"><i class="bi bi-trash3"></i></a>
+                    </div></td>
+                </tr>
+            }
+            @if (!users.Any()) { <tr><td colspan="5"><div class="empty-state"><i class="bi bi-people"></i><b>No users yet</b><span>Create the first user account to get started.</span></div></td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

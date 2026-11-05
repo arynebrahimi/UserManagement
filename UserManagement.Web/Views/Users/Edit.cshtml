@@ -1,0 +1,19 @@
+@model UserManagement.Web.ViewModels.Account.EditUserViewModel
+@{ ViewData["Title"] = "Edit user"; }
+<div class="page-heading"><div><div class="page-eyebrow">USER DIRECTORY</div><h2>Edit user</h2><p class="page-subtitle">Update the selected user's profile information.</p></div></div>
+<div class="form-card">
+    <div class="form-card-heading"><span class="form-heading-icon"><i class="bi bi-person-gear"></i></span><div><h3>Account details</h3><p>Changes will be saved to this user account.</p></div></div>
+    <form asp-controller="Users" asp-action="Edit" asp-route-id="@Model.ID" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="ID" />
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        <div class="form-grid">
+            <div class="form-field"><label asp-for="Username" class="form-label">Username</label><input asp-for="Username" class="form-control" /><span asp-validation-for="Username" class="field-validation"></span></div>
+            <div class="form-field"><label asp-for="FullName" class="form-label">Full name</label><input asp-for="FullName" class="form-control" /><span asp-validation-for="FullName" class="field-validation"></span></div>
+            <div class="form-field full-width"><label asp-for="Email" class="form-label">Email address</label><input asp-for="Email" class="form-control" type="email" /><span asp-validation-for="Email" class="field-validation"></span></div>
+        </div>
+        <div class="form-note"><i class="bi bi-info-circle"></i> Password and role are not editable on this page.</div>
+        <div class="form-actions"><a asp-action="Index" class="btn-secondary-soft">Cancel</a><button type="submit" class="btn-primary-soft"><i class="bi bi-check2"></i> Save changes</button></div>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,17 @@
+@model UserManagement.Web.ViewModels.Account.DeleteUserViewModel
+@{ ViewData["Title"] = "Delete user"; }
+<div class="page-heading"><div><div class="page-eyebrow">USER DIRECTORY</div><h2>Delete user</h2><p class="page-subtitle">Review the account before permanently removing it.</p></div></div>
+<div class="delete-card">
+    <div class="delete-icon"><i class="bi bi-trash3"></i></div>
+    <h3>Delete this account?</h3>
+    <p class="delete-description">This action cannot be undone. The following user account will be permanently deleted.</p>
+    <div class="delete-user-summary">
+        <span class="table-avatar large-avatar">@(!string.IsNullOrEmpty(Model.FullName) ? Model.FullName[0].ToString().ToUpperInvariant() : "U")</span>
+        <div><b>@Model.FullName</b><small>@@@Model.UserName</small><small>@Model.Email</small></div>
+    </div>
+    <form asp-controller="Users" asp-action="DeleteConfirmed" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ID" value="@Model.ID" />
+        <div class="form-actions centered-actions"><a asp-action="Index" class="btn-secondary-soft">Cancel</a><button type="submit" class="btn-danger-soft"><i class="bi bi-trash3"></i> Yes, delete user</button></div>
+    </form>
+</div>

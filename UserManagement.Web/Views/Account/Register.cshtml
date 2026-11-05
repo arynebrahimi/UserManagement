@@ -1,0 +1,74 @@
+@model UserManagement.Web.ViewModels.Account.RegisterViewModel
+@{
+    ViewData["Title"] = "Create account";
+}
+<div class="auth-page">
+    <div class="auth-decoration auth-decoration-one"></div>
+    <div class="auth-decoration auth-decoration-two"></div>
+    <div class="auth-shell auth-shell-register">
+        <section class="auth-showcase">
+            <a class="auth-brand" asp-controller="Home" asp-action="Index">
+                <span class="brand-mark"><i class="bi bi-grid-1x2-fill"></i></span>
+                User<span>Management</span>
+            </a>
+            <div class="showcase-content">
+                <div class="showcase-pill"><span></span> GET STARTED</div>
+                <h1>Your workspace<br /><em>starts here.</em></h1>
+                <p>Create your account and join a simpler way to organize people and access.</p>
+                <div class="register-benefits">
+                    <div><i class="bi bi-check2-circle"></i><span><b>One place for your account</b><small>Keep your profile information organized.</small></span></div>
+                    <div><i class="bi bi-shield-check"></i><span><b>Secure by design</b><small>Your password is securely hashed.</small></span></div>
+                    <div><i class="bi bi-lightning-charge"></i><span><b>Ready in minutes</b><small>Set up your account with a few details.</small></span></div>
+                </div>
+            </div>
+            <div class="showcase-footer">Simple. Secure. Organized.</div>
+        </section>
+
+        <section class="auth-form-side">
+            <div class="auth-form-card register-form-card">
+                <div class="auth-mobile-brand"><span class="brand-mark"><i class="bi bi-grid-1x2-fill"></i></span> UserManagement</div>
+                <div class="auth-heading-icon"><i class="bi bi-person-plus"></i></div>
+                <div class="auth-kicker">CREATE YOUR PROFILE</div>
+                <h2>Create an account</h2>
+                <p class="auth-description">Fill in the details below to get started.</p>
+
+                <form asp-controller="Account" asp-action="Register" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label">Username</label>
+                        <div class="input-with-icon"><i class="bi bi-person"></i><input asp-for="Username" class="form-control" placeholder="Choose a username" autocomplete="username" /></div>
+                        <span asp-validation-for="Username" class="field-validation"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label">Full name</label>
+                        <div class="input-with-icon"><i class="bi bi-card-text"></i><input asp-for="FullName" class="form-control" placeholder="Enter your full name" /></div>
+                        <span asp-validation-for="FullName" class="field-validation"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email address</label>
+                        <div class="input-with-icon"><i class="bi bi-envelope"></i><input asp-for="Email" class="form-control" placeholder="name@example.com" type="email" /></div>
+                        <span asp-validation-for="Email" class="field-validation"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <div class="input-with-icon"><i class="bi bi-lock"></i><input asp-for="Password" class="form-control" placeholder="Create a password" autocomplete="new-password" /></div>
+                        <span asp-validation-for="Password" class="field-validation"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label">Confirm password</label>
+                        <div class="input-with-icon"><i class="bi bi-lock-fill"></i><input asp-for="ConfirmPassword" class="form-control" placeholder="Repeat your password" autocomplete="new-password" /></div>
+                        <span asp-validation-for="ConfirmPassword" class="field-validation"></span>
+                    </div>
+                    <button type="submit" class="btn-auth-primary">Create account <i class="bi bi-arrow-right"></i></button>
+                </form>
+                <div class="auth-switch">Already have an account? <a asp-controller="Account" asp-action="Login">Sign in</a></div>
+                <div class="auth-secure"><i class="bi bi-shield-lock"></i> Your information is handled securely.</div>
+            </div>
+        </section>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

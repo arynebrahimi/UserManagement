@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Docs/" />
+  <Folder Name="/Src/" />
+  <Folder Name="/Src/Domain/">
+    <Project Path="UserManagement.Domain/UserManagement.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Src/Application/">
+    <Project Path="UserManagement.Application/UserManagement.Application.csproj" />
+  </Folder>
+  <Folder Name="/Src/Presentation/">
+    <Project Path="UserManagement.Web/UserManagement.Web.csproj" />
+  </Folder>
+  <Folder Name="/Test/" />
+</Solution>

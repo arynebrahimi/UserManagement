@@ -1,0 +1,76 @@
+@model UserManagement.Web.ViewModels.Account.LoginViewModel
+@{
+    ViewData["Title"] = "Sign in";
+}
+<div class="auth-page">
+    <div class="auth-decoration auth-decoration-one"></div>
+    <div class="auth-decoration auth-decoration-two"></div>
+    <div class="auth-shell">
+        <section class="auth-showcase">
+            <a class="auth-brand" asp-controller="Home" asp-action="Index">
+                <span class="brand-mark"><i class="bi bi-grid-1x2-fill"></i></span>
+                User<span>Management</span>
+            </a>
+            <div class="showcase-content">
+                <div class="showcase-pill"><span></span> MANAGEMENT PLATFORM</div>
+                <h1>Everything organized.<br /><em>Everyone connected.</em></h1>
+                <p>A clear and secure space to manage users, access and everyday operations.</p>
+                <div class="showcase-art">
+                    <div class="art-window">
+                        <div class="art-window-top"><i></i><i></i><i></i><span>Workspace overview</span></div>
+                        <div class="art-window-body">
+                            <div class="art-side"><b></b><b></b><b></b><b></b></div>
+                            <div class="art-main">
+                                <div class="art-line wide"></div><div class="art-line"></div>
+                                <div class="art-cards"><i></i><i></i><i></i></div>
+                                <div class="art-table"><b></b><b></b><b></b></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="art-float"><i class="bi bi-shield-check"></i><span><b>Secure access</b><small>Protected workspace</small></span></div>
+                </div>
+            </div>
+            <div class="showcase-footer">Simple. Secure. Organized.</div>
+        </section>
+
+        <section class="auth-form-side">
+            <div class="auth-form-card">
+                <div class="auth-mobile-brand"><span class="brand-mark"><i class="bi bi-grid-1x2-fill"></i></span> UserManagement</div>
+                <div class="auth-heading-icon"><i class="bi bi-person-lock"></i></div>
+                <div class="auth-kicker">WELCOME BACK</div>
+                <h2>Sign in to your account</h2>
+                <p class="auth-description">Enter your credentials to continue to your workspace.</p>
+
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success auth-alert"><i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]</div>
+                }
+
+                <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Username" class="form-label">Username</label>
+                        <div class="input-with-icon"><i class="bi bi-person"></i><input asp-for="Username" class="form-control" placeholder="Enter your username" autocomplete="username" /></div>
+                        <span asp-validation-for="Username" class="field-validation"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <div class="input-with-icon"><i class="bi bi-lock"></i><input asp-for="Password" class="form-control" placeholder="Enter your password" autocomplete="current-password" /></div>
+                        <span asp-validation-for="Password" class="field-validation"></span>
+                    </div>
+                    <div class="auth-options">
+                        <label class="remember-option"><input asp-for="RememberMe" /> <span>Remember me</span></label>
+                    </div>
+                    <button type="submit" class="btn-auth-primary">Sign in <i class="bi bi-arrow-right"></i></button>
+                </form>
+                <div class="auth-switch">Don't have an account? <a asp-controller="Account" asp-action="Register">Create account</a></div>
+                <div class="auth-secure"><i class="bi bi-shield-lock"></i> Your account is protected with secure authentication.</div>
+            </div>
+        </section>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
