@@ -7,9 +7,11 @@
   <Folder Name="/Src/Application/">
     <Project Path="UserManagement.Application/UserManagement.Application.csproj" />
   </Folder>
+  <Folder Name="/Src/Persistence/">
+    <Project Path="UserManagement.Persistence/UserManagement.Persistence.csproj" Id="26466540-6eae-4302-8c1e-768e6c962670" />
+  </Folder>
   <Folder Name="/Src/Presentation/">
     <Project Path="UserManagement.Web/UserManagement.Web.csproj" />
   </Folder>
   <Folder Name="/Test/" />
-  <Project Path="UserManagement.Persistence/UserManagement.Persistence.csproj" Id="26466540-6eae-4302-8c1e-768e6c962670" />
 </Solution>

@@ -4,20 +4,35 @@ using Microsoft.EntityFrameworkCore;
 using UserManagement.Application.Interfaces;
 using UserManagement.Application.Services;
 using UserManagement.Domain.Entities;
-using UserManagement.Web.Data;
+using UserManagement.Persistence.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
+// Connection String
+var connectionString = builder.Configuration
+    .GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException(
+        "Connection string 'DefaultConnection' was not found.");
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
-builder.Services.AddScoped<IDb>(serviceProvider => serviceProvider.GetRequiredService<AppDbContext>());
+// Database Context
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        connectionString,
+        sqlOptions =>
+            sqlOptions.MigrationsAssembly(
+                "UserManagement.Persistence")));
+
+// Dependency Injection
+builder.Services.AddScoped<IDb>(serviceProvider =>
+    serviceProvider.GetRequiredService<AppDbContext>());
+
 builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
+// Authentication
 builder.Services
     .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -32,6 +47,7 @@ builder.Services
         options.SlidingExpiration = true;
     });
 
+// Authorization
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
@@ -52,6 +68,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
