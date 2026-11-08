@@ -12,35 +12,65 @@ namespace UserManagement.Web.Controllers;
 [Authorize(Policy = "AdminOnly")]
 public class UsersController : Controller
 {
-    private readonly IUserService _userService;
+    private readonly IAddUser _addUser;
+    private readonly IDeleteUser _deleteUser;
+    private readonly IUpdateUser _updateUser;
+    private readonly IGetAllUsers _getAllUsers;
+    private readonly IGetUserById _getUserById;
+    private readonly IUsernameExists _usernameExists;
     private readonly IPasswordHasher<User> _passwordHasher;
 
-    public UsersController(IUserService userService, IPasswordHasher<User> passwordHasher)
+    public UsersController(
+        IAddUser addUser,
+        IDeleteUser deleteUser,
+        IUpdateUser updateUser,
+        IGetAllUsers getAllUsers,
+        IGetUserById getUserById,
+        IUsernameExists usernameExists,
+        IPasswordHasher<User> passwordHasher)
     {
-        _userService = userService;
+        _addUser = addUser;
+        _deleteUser = deleteUser;
+        _updateUser = updateUser;
+        _getAllUsers = getAllUsers;
+        _getUserById = getUserById;
+        _usernameExists = usernameExists;
         _passwordHasher = passwordHasher;
     }
 
+    // GET: Users
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var users = await _userService.GetAllAsync();
+        var users = await _getAllUsers.GetAllAsync();
+
         return View(users);
     }
 
+    // GET: Users/Create
     [HttpGet]
-    public IActionResult Create() => View();
+    public IActionResult Create()
+    {
+        return View();
+    }
 
-    [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreateUserViewModel model)
+    // POST: Users/Create
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(
+        CreateUserViewModel model)
     {
         if (!ModelState.IsValid)
             return View(model);
 
         var username = model.Username.Trim();
-        if (await _userService.UsernameExistsAsync(username))
+
+        if (await _usernameExists.ExecuteAsync(username))
         {
-            ModelState.AddModelError(nameof(model.Username), "This username is already taken.");
+            ModelState.AddModelError(
+                nameof(model.Username),
+                "This username is already taken.");
+
             return View(model);
         }
 
@@ -52,40 +82,56 @@ public class UsersController : Controller
             CreatedAt = DateTime.UtcNow,
             Role = "User"
         };
-        user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
+
+        user.PasswordHash = _passwordHasher.HashPassword(
+            user,
+            model.Password);
 
         try
         {
-            await _userService.AddAsync(user);
+            await _addUser.AddAsync(user);
         }
         catch (DbUpdateException)
         {
-            ModelState.AddModelError(string.Empty, "Unable to save the user. Please check the information and try again.");
+            ModelState.AddModelError(
+                string.Empty,
+                "Unable to save the user. Please try again.");
+
             return View(model);
         }
 
-        TempData["SuccessMessage"] = "User has been created successfully.";
+        TempData["SuccessMessage"] =
+            "User has been created successfully.";
+
         return RedirectToAction(nameof(Index));
     }
 
+    // GET: Users/Edit/5
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var user = await _userService.GetByIdAsync(id);
+        var user = await _getUserById.GetByIdAsync(id);
+
         if (user == null)
             return NotFound();
 
-        return View(new EditUserViewModel
+        var model = new EditUserViewModel
         {
             ID = user.ID,
             Username = user.UserName,
             FullName = user.FullName,
             Email = user.Email
-        });
+        };
+
+        return View(model);
     }
 
-    [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, EditUserViewModel model)
+    // POST: Users/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(
+        int id,
+        EditUserViewModel model)
     {
         if (id != model.ID)
             return BadRequest();
@@ -93,14 +139,19 @@ public class UsersController : Controller
         if (!ModelState.IsValid)
             return View(model);
 
-        var user = await _userService.GetByIdAsync(id);
+        var user = await _getUserById.GetByIdAsync(id);
+
         if (user == null)
             return NotFound();
 
         var username = model.Username.Trim();
-        if (await _userService.UsernameExistsAsync(username, id))
+
+        if (await _usernameExists.ExecuteAsync(username, id))
         {
-            ModelState.AddModelError(nameof(model.Username), "This username is already used by another user.");
+            ModelState.AddModelError(
+                nameof(model.Username),
+                "This username is already used by another user.");
+
             return View(model);
         }
 
@@ -108,54 +159,74 @@ public class UsersController : Controller
         user.FullName = model.FullName.Trim();
         user.Email = model.Email.Trim();
 
-        await _userService.UpdateAsync(user);
-        TempData["SuccessMessage"] = "User information has been updated successfully.";
+        await _updateUser.UpdateAsync(user);
+
+        TempData["SuccessMessage"] =
+            "User information has been updated successfully.";
+
         return RedirectToAction(nameof(Index));
     }
 
+    // GET: Users/Delete/5
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var user = await _userService.GetByIdAsync(id);
+        var user = await _getUserById.GetByIdAsync(id);
+
         if (user == null)
             return NotFound();
 
         if (IsCurrentUser(id))
         {
-            TempData["ErrorMessage"] = "You cannot delete your own account.";
+            TempData["ErrorMessage"] =
+                "You cannot delete your own account.";
+
             return RedirectToAction(nameof(Index));
         }
 
-        return View(new DeleteUserViewModel
+        var model = new DeleteUserViewModel
         {
             ID = user.ID,
             UserName = user.UserName,
             FullName = user.FullName,
             Email = user.Email
-        });
+        };
+
+        return View(model);
     }
 
-    [HttpPost, ValidateAntiForgeryToken]
+    // POST: Users/DeleteConfirmed/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var user = await _userService.GetByIdAsync(id);
+        var user = await _getUserById.GetByIdAsync(id);
+
         if (user == null)
             return NotFound();
 
         if (IsCurrentUser(id))
         {
-            TempData["ErrorMessage"] = "You cannot delete your own account.";
+            TempData["ErrorMessage"] =
+                "You cannot delete your own account.";
+
             return RedirectToAction(nameof(Index));
         }
 
-        await _userService.DeleteAsync(user);
-        TempData["SuccessMessage"] = "User has been deleted successfully.";
+        await _deleteUser.DeleteAsync(user);
+
+        TempData["SuccessMessage"] =
+            "User has been deleted successfully.";
+
         return RedirectToAction(nameof(Index));
     }
 
     private bool IsCurrentUser(int id)
     {
-        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        return int.TryParse(currentUserId, out var parsedId) && parsedId == id;
+        var currentUserId = User.FindFirstValue(
+            ClaimTypes.NameIdentifier);
+
+        return int.TryParse(currentUserId, out var parsedId)
+               && parsedId == id;
     }
 }
